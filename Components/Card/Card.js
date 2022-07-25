@@ -1,30 +1,88 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { View, Text, Image , StyleSheet, Dimensions } from 'react-native';
+import { Chart, Line } from 'react-native-responsive-linechart';
 
-export default function Card(){
+export default function Card({coin}){
+    const [sparkline, setSparkline] = useState([]);
+    const [colors, setColors] = useState({sparkline: '', h: '', d:'', w: '' });
+
+    if(!coin){
+        return <View></View>;
+    }
+
+    useEffect(()=>{
+        if(coin.sparkline_in_7d){
+            let data = [];
+            let colores = {sparkline: '', h: '', d:'', w: ''};
+            coin.sparkline_in_7d.price.forEach((p,index) =>{
+                data.push({x: index, y: p})
+            });
+            setSparkline(data);
+
+            if(coin.sparkline_in_7d.price[0] < coin.sparkline_in_7d.price[data.length-1]){
+                colores.sparkline = 'green';
+            } else if (coin.sparkline_in_7d.price[0] > coin.sparkline_in_7d.price[coin.sparkline_in_7d.price.length-1]){
+                colores.sparkline = '#d43d3d';
+            } else {
+                colores.sparkline = 'gray';
+            }
+
+            [
+                coin.price_change_percentage_1h_in_currency,
+                coin.price_change_percentage_24h_in_currency,
+                coin.price_change_percentage_7d_in_currency
+            ].forEach((p,i)=>{
+                let prop = '';
+                if (i === 0) prop = 'h';
+                if (i === 1) prop = 'd';
+                if (i === 2) prop = 'w';
+
+                if (p > 0){
+                    colores[prop] = '#56d756';
+                } else if (p < 0)
+                {
+                    colores[prop] = '#e44f4f';
+                } else {
+                    colores[prop] = '#d6d6d6';
+                }
+
+            })
+
+            setColors(colores);
+
+        }
+        
+    },[coin])
 
     return (
         <View style={s.card}>
-            <Image style={s.cardImg} alt='Coin' source={{uri: 'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/256/Bitcoin-BTC-icon.png'}} />
+            <Image style={s.cardImg} alt='Coin' source={{uri: coin.image}} />
             <View style={s.cardData}>
                 <View style={s.cardNameContainer}>
-                    <Text style={s.cardName} numberOfLines={1}>Bitcoin - $20,650.7</Text>
+                    <Text style={s.cardName} numberOfLines={1}>{coin.name} - ${coin.current_price}</Text>
                 </View>
                 <View style={s.cardStats}>
                     <View style={s.cardStat}>
                         <Text style={s.cardStatText}>1h</Text>
-                        <Text style={s.cardStatText}>-1%</Text>
+                        <Text style={[s.cardStatText, {color: colors.h } ]}>{Math.floor(coin.price_change_percentage_1h_in_currency * 100) / 100}%</Text>
                     </View>
                     <View style={s.cardStat}>
                         <Text style={s.cardStatText}>24h</Text>
-                        <Text style={s.cardStatText}>23%</Text>
+                        <Text style={[s.cardStatText, {color: colors.d } ]}>{Math.floor(coin.price_change_percentage_24h_in_currency * 100) / 100}%</Text>
                     </View>
                     <View style={s.cardStat}>
                         <Text style={s.cardStatText}>7d</Text>
-                        <Text style={s.cardStatText}>3%</Text>
+                        <Text style={[s.cardStatText, {color: colors.w } ]}>{Math.floor(coin.price_change_percentage_7d_in_currency * 100) / 100}%</Text>
                     </View>
                 </View>
             </View>
+            <Chart
+                style={{ height: 90, width: 150 }}
+                    data={sparkline}
+                    padding={{ left: 10, bottom: 20, right: 20, top: 20 }}
+                >
+                <Line theme={{ stroke: { color: colors.sparkline, width: 2 }}} />
+            </Chart>
         </View>
     )
 }
@@ -42,10 +100,10 @@ const s = StyleSheet.create({
         elevation: 5,
         display: 'flex',
         flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        gap: 16, // hmmm
         paddingLeft: 20,
-        paddingRight: 20
+        paddingRight: 30,
     },
     cardImg:{
         height: '60%',
