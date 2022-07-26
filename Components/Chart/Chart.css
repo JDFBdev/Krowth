@@ -1,0 +1,23 @@
+html{
+    width: 90px;
+    padding: 0;
+    margin: 0;
+}
+
+body{
+    width: 90px;
+    padding: 0;
+    margin: 0;
+}
+
+.coin {
+    margin: 0;
+    display: grid;
+    max-width: 90px;
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(50px, 60px) 1fr;
+    grid-template: 
+        "info"
+        "chart";
+    border-radius: 30px;
+}

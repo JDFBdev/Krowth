@@ -1,15 +1,15 @@
 import React, {useState, useEffect} from "react";
 import { View, Text, Image , StyleSheet, Dimensions } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import mainIcon from '../../assets/icon.png';
+
 import {StatusBar, ScrollView} from 'react-native';
 import Card from '../Card/Card';
 import axios from 'axios';
+import Navbar from '../Navbar/Navbar';
 
 let widthvw = Dimensions.get('window').width; //full width
 let heightvh = Dimensions.get('window').height; //full height 
 
-export default function Home(){
+export default function Home({navigation}){
     const [coins, setCoins] = useState([]);
 
     useEffect(()=>{
@@ -24,11 +24,7 @@ export default function Home(){
     return(
         <View style={s.container}>
             <StatusBar barStyle='light-content' backgroundColor="#161831" />
-            <View style={s.navbar}>
-                <Image style={s.navbarImg} source={mainIcon} />
-                <Text style={s.navbarTitle}>Krowth</Text>
-                <Ionicons name="ios-menu" size={50} color="white" />
-            </View>
+            <Navbar />
             <ScrollView>
                 <View style={s.content}>
                     <Text style={s.cardsTitle}>By Market Cap</Text>
@@ -37,12 +33,11 @@ export default function Home(){
                         coins?.map((c,i)=>{
                             return (
                                 <View key={i}>
-                                    <Card coin={c} />
+                                    <Card coin={c} navigation={navigation} />
                                     <View style={{height: 15}}/>
                                 </View>
                             )
                         })
-
                     }
                         <Card/>
                     </View>
@@ -58,7 +53,7 @@ const s = StyleSheet.create({
     navbar: { alignSelf: 'stretch', height: 70, display: 'flex', flexDirection: 'row' ,  justifyContent: 'space-between', alignItems: 'center', paddingLeft: '3%', paddingRight: '3%'},
     navbarImg: { height: '80%', width: 60 ,  resizeMode: 'contain'},
     navbarTitle: { color: '#EEF1FA', fontSize: 30 },
-    cardsTitle: { color: '#EEF1FA', fontSize: 25 },
+    cardsTitle: { color: '#EEF1FA', fontSize: 30, marginBottom: 20 },
     content: { padding: 25 },
     cards: { paddingBottom: 100 }
 })
