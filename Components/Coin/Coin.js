@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text, Image, Dimensions , StyleSheet, StatusBar, TextInput  } from 'react-native';
+import React, {useState} from "react";
+import { View, Text, Image, Dimensions , StyleSheet, StatusBar, TextInput, Modal, TouchableOpacity, TouchableHighlight } from 'react-native';
 import Navbar from '../Navbar/Navbar';
 import {LinearGradient} from 'expo-linear-gradient';
 import Arrows from '../../assets/arrows.png';
@@ -10,9 +10,10 @@ let heightvh = Dimensions.get('window').height; //full height
 export default function Coin({route}){
     const { coin } = route.params;
     const [text, setText] = React.useState(0);
+    const [modalVisible, setModalVisible] = useState(false);
 
-    const handleText = function(){
-        setText()
+    const handleText = function(e){
+        setText(e)
     }
 
     return (
@@ -40,7 +41,6 @@ export default function Coin({route}){
                         <TextInput
                             style={s.input1}
                             onChangeText={handleText}
-                            value={text}
                             keyboardType="numeric"
                         />
                     </View>
@@ -49,15 +49,31 @@ export default function Coin({route}){
                         <TextInput
                             style={s.input2}
                             onChangeText={handleText}
-                            value={text}
                             keyboardType="numeric"
                         />
-                        <LinearGradient colors={['#3AE778', '#5054A2']} style={s.conversionSymbolContainer2} start={{x: 0, y: 0}} end={{x: 1, y: 0}} >
-                            <Text style={{color: '#EEF1FA'}}>USD</Text>
-                        </LinearGradient>
+                        <TouchableOpacity onPress={()=> {setModalVisible(true);}}>
+                            <LinearGradient colors={['#3AE778', '#5054A2']} style={s.conversionSymbolContainer2} start={{x: 0, y: 0}} end={{x: 1, y: 0}} >
+                                <Text style={{color: '#EEF1FA'}}>
+                                    USD
+                                </Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </View>
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                setModalVisible(!modalVisible);
+                }}>
+                <TouchableOpacity style={s.modalFrame} onPress={()=> {setModalVisible(false);}} activeOpacity={1}>
+                    <TouchableOpacity style={s.modal} activeOpacity={1}>
+                        <Text>ANASHEI</Text>
+                    </TouchableOpacity>
+                </TouchableOpacity>
+            </Modal>
         </View>
     )
 }
@@ -110,7 +126,8 @@ const s = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center'
-    }, conversionSymbolContainer1: {
+    },
+    conversionSymbolContainer1: {
         height: 40,
         padding: 10,
         borderRadius: 8,
@@ -119,16 +136,17 @@ const s = StyleSheet.create({
     },
     input1: {
         height: 40,
-        width: 120,
-        margin: 12,
-        marginLeft: 0,
+        width: '45%',
+        alignSelf:'stretch',
+        marginRight: -30,
         borderRadius: 8,
         borderBottomLeftRadius: 0,
         borderTopLeftRadius: 0,
         padding: 10,
         backgroundColor: '#44455C',
         color: '#EEF1FA'
-    }, conversionSymbolContainer2: {
+    },
+    conversionSymbolContainer2: {
         height: 40,
         padding: 10,
         borderRadius: 8,
@@ -137,15 +155,29 @@ const s = StyleSheet.create({
     },
     input2: {
         height: 40,
-        width: 120,
-        margin: 12,
-        marginRight: 0,
+        width: '45%',
         borderRadius: 8,
+        marginLeft: -30,
+        alignSelf:'stretch',
         borderBottomRightRadius: 0,
         borderTopRightRadius: 0,
         padding: 10,
         backgroundColor: '#44455C',
         color: '#EEF1FA'
+    },
+    modalFrame: {
+        width: "100%",
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000050'
+    },
+    modal: {
+        width: '60%',
+        height: 400,
+        backgroundColor: '#262842',
+        borderRadius: 10
     }
 
 })

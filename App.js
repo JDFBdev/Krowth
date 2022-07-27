@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import 'react-native-gesture-handler';
 import Home from './Components/Home/Home';
 import Coin from './Components/Coin/Coin';
 
