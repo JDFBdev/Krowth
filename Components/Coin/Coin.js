@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { View, Text, Image, Dimensions , StyleSheet, StatusBar, TextInput, Modal, TouchableOpacity, TouchableHighlight } from 'react-native';
+import { View, Text, Image, Dimensions , StyleSheet, StatusBar, TextInput, Modal, TouchableOpacity} from 'react-native';
 import Navbar from '../Navbar/Navbar';
 import {LinearGradient} from 'expo-linear-gradient';
 import Arrows from '../../assets/arrows.png';
@@ -7,19 +7,20 @@ import Arrows from '../../assets/arrows.png';
 let widthvw = Dimensions.get('window').width; //full width
 let heightvh = Dimensions.get('window').height; //full height 
 
-export default function Coin({route}){
+export default function Coin({route, navigation}){
     const { coin } = route.params;
-    const [text, setText] = React.useState(0);
+    const [coversion, setConversion] = React.useState({fisrt: 0, second: 0});
+    const [selectedCurrency, setSelectedCurrency] = React.useState('USD');
     const [modalVisible, setModalVisible] = useState(false);
 
     const handleText = function(e){
-        setText(e)
+        setConversion((prev)=> ({...prev, fisrt: e}))
     }
 
     return (
         <View style={s.container}>
             <StatusBar barStyle='light-content' backgroundColor="#161831" />
-            <Navbar />
+            <Navbar navigation={navigation} />
             <View style={s.content}>
                 <View style={s.header}>
                     <LinearGradient colors={['#3AE778', '#5054A2']} style={s.rankContainer} start={{x: 0, y: 0}} end={{x: 1, y: 0}} >
@@ -54,7 +55,7 @@ export default function Coin({route}){
                         <TouchableOpacity onPress={()=> {setModalVisible(true);}}>
                             <LinearGradient colors={['#3AE778', '#5054A2']} style={s.conversionSymbolContainer2} start={{x: 0, y: 0}} end={{x: 1, y: 0}} >
                                 <Text style={{color: '#EEF1FA'}}>
-                                    USD
+                                    {selectedCurrency}
                                 </Text>
                             </LinearGradient>
                         </TouchableOpacity>
@@ -70,7 +71,59 @@ export default function Coin({route}){
                 }}>
                 <TouchableOpacity style={s.modalFrame} onPress={()=> {setModalVisible(false);}} activeOpacity={1}>
                     <TouchableOpacity style={s.modal} activeOpacity={1}>
-                        <Text>ANASHEI</Text>
+                        <Text style={{color: '#EEF1FA',fontSize: 20, marginBottom: 20}}>
+                            Select a currency to convert
+                        </Text>
+                        <TouchableOpacity onPress={()=> {setSelectedCurrency('USD'); setModalVisible(false);}}>
+                            <View style={s.selectorBtn}>
+                                <Text style={s.selectorBtnText}>USD</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={()=> {setSelectedCurrency('BTC'); setModalVisible(false);}}>
+                            <View style={s.selectorBtn}>
+                                <Text style={s.selectorBtnText}>BTC</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={()=> {setSelectedCurrency('ETH'); setModalVisible(false);}}>
+                            <View style={s.selectorBtn}>
+                                <Text style={s.selectorBtnText}>ETH</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={()=> {setSelectedCurrency('LTC'); setModalVisible(false);}}>
+                            <View style={s.selectorBtn}>
+                                <Text style={s.selectorBtnText}>LTC</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={()=> {setSelectedCurrency('BNB'); setModalVisible(false);}}>
+                            <View style={s.selectorBtn}>
+                                <Text style={s.selectorBtnText}>BNB</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={()=> {setSelectedCurrency('EOS'); setModalVisible(false);}}>
+                            <View style={s.selectorBtn}>
+                                <Text style={s.selectorBtnText}>EOS</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={()=> {setSelectedCurrency('XRP'); setModalVisible(false);}}>
+                            <View style={s.selectorBtn}>
+                                <Text style={s.selectorBtnText}>XRP</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={()=> {setSelectedCurrency('XLM'); setModalVisible(false);}}>
+                            <View style={s.selectorBtn}>
+                                <Text style={s.selectorBtnText}>XLM</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={()=> {setSelectedCurrency('LINK'); setModalVisible(false);}}>
+                            <View style={s.selectorBtn}>
+                                <Text style={s.selectorBtnText}>LINK</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={()=> {setSelectedCurrency('DOT'); setModalVisible(false);}}>
+                            <View style={s.selectorBtn}>
+                                <Text style={s.selectorBtnText}>DOT</Text>
+                            </View>
+                        </TouchableOpacity>
                     </TouchableOpacity>
                 </TouchableOpacity>
             </Modal>
@@ -174,10 +227,26 @@ const s = StyleSheet.create({
         backgroundColor: '#00000050'
     },
     modal: {
-        width: '60%',
-        height: 400,
+        width: 320,
         backgroundColor: '#262842',
-        borderRadius: 10
+        borderRadius: 10,
+        padding: 20,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        flexWrap: 'wrap'
+    },
+    selectorBtn: {
+        backgroundColor: '#44455C',
+        padding: 8,
+        borderRadius: 5,
+        flexWrap: 'wrap',
+        marginRight: 10,
+        marginBottom: 10
+    },
+    selectorBtnText: {
+        color: '#EEF1FA'
     }
 
 })
