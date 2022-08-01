@@ -77,7 +77,7 @@ export default function Card({coin, navigation}){
                     </View>
                 </View>
                 <Chart
-                    style={{ height: 90, width: 150 }}
+                    style={{ height: 90, flex: 2, marginLeft: 20 }}
                         data={sparkline}
                         padding={{ left: 10, bottom: 20, right: 20, top: 20 }}
                     >
@@ -104,19 +104,22 @@ const s = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingLeft: 20,
-        paddingRight: 30,
+        paddingRight: 20,
     },
     cardImg:{
         height: '60%',
         aspectRatio: 1/1,
         resizeMode: 'contain',
-        borderRadius: 8
+        borderRadius: 8,
+        flex: 1
     },
     cardData: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
-        marginLeft: 16
+        justifyContent: 'center',
+        marginLeft: 30,
+        flex: 2
     },
     cardNameContainer: {
         width: 150,
@@ -136,7 +139,7 @@ const s = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 20
+        marginRight: 15
     },
     cardStatText:{
         color: '#EEF1FA',

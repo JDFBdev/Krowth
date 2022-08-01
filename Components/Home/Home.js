@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from "react";
 import { View, Text , StyleSheet, Dimensions, Alert, Modal } from 'react-native';
-
 import {StatusBar, ScrollView} from 'react-native';
 import Card from '../Card/Card';
 import axios from 'axios';
@@ -9,14 +8,13 @@ import Navbar from '../Navbar/Navbar';
 let widthvw = Dimensions.get('window').width; //full width
 let heightvh = Dimensions.get('window').height; //full height 
 
-export default function Home({navigation, route}){
+export default function Home({navigation}){
     const [coins, setCoins] = useState([]);
     const [filter, setFilter] = useState('By Market Cap');
     const [loading, setLoading] = useState(false);
 
     useEffect(()=>{
         async function fetchData() {
-            setLoading(true);
             try{
                 let promise = await axios.get(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=true&price_change_percentage=1h%2C24h%2C7d`)
                 let response = promise.data;
@@ -24,15 +22,11 @@ export default function Home({navigation, route}){
             }catch(e) {
                 Alert.alert('Something went wrong! Please try again later.')
             }
-            setLoading(false);
-            
         }
         fetchData();
-
     },[])
 
     useEffect(()=>{
-        setLoading(true);
         let aux = [...coins];
         switch (filter) {
             case 'By Market Cap':
@@ -80,8 +74,6 @@ export default function Home({navigation, route}){
 
         }
         setCoins(aux);
-        setLoading(false);
-        
     }, [filter])
 
     return(
@@ -106,7 +98,7 @@ export default function Home({navigation, route}){
                     </View>
                 </View>
             </ScrollView>
-            <Modal
+            {/* <Modal
                 animationType="fade"
                 transparent={true}
                 visible={loading}>
@@ -115,7 +107,7 @@ export default function Home({navigation, route}){
                             <Text style={{fontSize: 30}}>Loading...</Text>
                         </View>
                     </View>
-            </Modal>
+            </Modal> */}
         </View>
     )
 }

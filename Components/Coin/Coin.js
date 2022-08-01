@@ -1,21 +1,88 @@
-import React, {useState} from "react";
-import { View, Text, Image, Dimensions , StyleSheet, StatusBar, TextInput, Modal, TouchableOpacity} from 'react-native';
+import React, {useState, useEffect} from "react";
+import { View, Text, Image, Dimensions , StyleSheet, StatusBar, TextInput, Modal, TouchableOpacity, Alert} from 'react-native';
 import Navbar from '../Navbar/Navbar';
 import {LinearGradient} from 'expo-linear-gradient';
 import Arrows from '../../assets/arrows.png';
+import axios from 'axios';
+import { Chart, Line, HorizontalAxis } from 'react-native-responsive-linechart';
 
 let widthvw = Dimensions.get('window').width; //full width
 let heightvh = Dimensions.get('window').height; //full height 
 
 export default function Coin({route, navigation}){
     const { coin } = route.params;
-    const [coversion, setConversion] = React.useState({fisrt: 0, second: 0});
-    const [selectedCurrency, setSelectedCurrency] = React.useState('USD');
+    const [prices, setPrices] = useState({USD: 0, BTC: 0, ETH: 0, LTC: 0, BNB: 0, EOS: 0, XRP: 0, XLM: 0, LINK: 0, DOT: 0})
+    const [conversion, setConversion] = useState({first: 1, second: coin.current_price});
+    const [selectedCurrency, setSelectedCurrency] = useState('USD');
     const [modalVisible, setModalVisible] = useState(false);
+    const [sparkline, setSparkline] = useState([]);
+    const [colors, setColors] = useState({sparkline: '#d6d6d6', h: '#d6d6d6', d:'#d6d6d6', w: '#d6d6d6'});
 
-    const handleText = function(e){
-        setConversion((prev)=> ({...prev, fisrt: e}))
+    useEffect(()=>{
+
+        async function fetchData() {
+            try{
+                let promise = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=bitcoin%2Cusd-coin%2Cethereum%2Cbinancecoin%2Cripple%2Cpolkadot%2Clitecoin%2Cstellar%2Ceos%2Cchainlink&vs_currencies=usd`)
+                let response = promise.data;
+                setPrices({USD: response['usd-coin'].usd, BTC: response.bitcoin.usd, ETH: response.ethereum.usd, LTC: response.litecoin.usd, BNB: response.binancecoin.usd, EOS: response.eos.usd, XRP: response.ripple.usd, XLM: response.stellar.usd, LINK: response.chainlink.usd, DOT: response.polkadot.usd})
+            }catch(e) {
+                Alert.alert('Something went wrong! Please try again later.')
+            }
+        }
+        fetchData();
+        
+    },[])
+
+    const handleConversionFirst = function(e){
+        setConversion((prev)=> ({first: e, second: e*prices[selectedCurrency]}))
     }
+
+    const handleConversionSecond = function(e){
+        setConversion((prev)=> ({...prev, second: e}))
+    }
+
+    useEffect(()=>{
+        if(coin.sparkline_in_7d){
+            let data = [];
+            let colores = {sparkline: '#d6d6d6', h: '#d6d6d6', d:'#d6d6d6', w: '#d6d6d6'};
+            coin.sparkline_in_7d.price.forEach((p,index) =>{
+                data.push({x: index, y: p})
+            });
+            setSparkline(data);
+
+            if(coin.sparkline_in_7d.price[0] < coin.sparkline_in_7d.price[data.length-1]){
+                colores.sparkline = '#56d756';
+            } else if (coin.sparkline_in_7d.price[0] > coin.sparkline_in_7d.price[coin.sparkline_in_7d.price.length-1]){
+                colores.sparkline = '#d43d3d';
+            } else {
+                colores.sparkline = '#d6d6d6';
+            }
+
+            [
+                coin.price_change_percentage_1h_in_currency,
+                coin.price_change_percentage_24h_in_currency,
+                coin.price_change_percentage_7d_in_currency
+            ].forEach((p,i)=>{
+                let prop = '';
+                if (i === 0) prop = 'h';
+                if (i === 1) prop = 'd';
+                if (i === 2) prop = 'w';
+
+                if (p > 0){
+                    colores[prop] = '#56d756';
+                } else if (p < 0){
+                    colores[prop] = '#e44f4f';
+                } else {
+                    colores[prop] = '#d6d6d6';
+                }
+
+            })
+
+            setColors(colores);
+
+        }
+        
+    },[coin])
 
     return (
         <View style={s.container}>
@@ -41,16 +108,18 @@ export default function Coin({route, navigation}){
                         </LinearGradient>
                         <TextInput
                             style={s.input1}
-                            onChangeText={handleText}
+                            onChangeText={handleConversionFirst}
                             keyboardType="numeric"
+                            value={conversion.first.toString()}
                         />
                     </View>
                     <Image style={{width:25, height: 20}} source={Arrows} />
                     <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <TextInput
                             style={s.input2}
-                            onChangeText={handleText}
+                            onChangeText={handleConversionSecond}
                             keyboardType="numeric"
+                            value={conversion.second.toString()}
                         />
                         <TouchableOpacity onPress={()=> {setModalVisible(true);}}>
                             <LinearGradient colors={['#3AE778', '#5054A2']} style={s.conversionSymbolContainer2} start={{x: 0, y: 0}} end={{x: 1, y: 0}} >
@@ -61,6 +130,15 @@ export default function Coin({route, navigation}){
                         </TouchableOpacity>
                     </View>
                 </View>
+                <Text style={s.chartTitle}>7 Day View</Text>
+                <Chart
+                    style={{ height: 200, width:'100%'}}
+                        data={sparkline}
+                        padding={{ left: 10, bottom: 20, right: 20, top: 20 }}
+                    >
+                    <HorizontalAxis tickCount={10} />
+                    <Line theme={{ stroke: { color: colors.sparkline, width: 2 }}} />
+                </Chart>
             </View>
             <Modal
                 animationType="fade"
@@ -247,6 +325,11 @@ const s = StyleSheet.create({
     },
     selectorBtnText: {
         color: '#EEF1FA'
+    },
+    chartTitle: {
+        color: '#EEF1FA',
+        fontSize: 25,
+        marginTop: 30
     }
 
 })
