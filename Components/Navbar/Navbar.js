@@ -3,7 +3,7 @@ import { View, Text, Image , StyleSheet, TouchableOpacity, Modal} from 'react-na
 import { Ionicons } from '@expo/vector-icons';
 import mainIcon from '../../assets/icon.png';
 
-export default function Navbar({navigation, setFilter}){
+export default function Navbar({navigation, setFilter, isCoin}){
     const [modalVisible, setModalVisible] = useState(false);
 
     const handleFilter = function(filter){
@@ -20,9 +20,15 @@ export default function Navbar({navigation, setFilter}){
                 <Image style={s.navbarImg} source={mainIcon} />
             </TouchableOpacity>
             <Text style={s.navbarTitle}>Krowth</Text>
-            <TouchableOpacity onPress={()=> setModalVisible(true)}>
-                <Ionicons name="ios-menu" size={50} color="white" />
-            </TouchableOpacity>
+            {
+                isCoin ? 
+                <TouchableOpacity>
+                    <Ionicons name="ios-menu" size={50} color="white" />
+                </TouchableOpacity> : 
+                <TouchableOpacity onPress={()=> setModalVisible(true)}>
+                    <Ionicons name="ios-menu" size={50} color="white" />
+                </TouchableOpacity>
+            }
             <Modal
                 animationType="fade"
                 transparent={true}
@@ -87,7 +93,7 @@ const s = StyleSheet.create({
     modal: {
         width: '60%',
         height: '100%',
-        backgroundColor: '#262842',
+        backgroundColor: '#161831',
         marginRight: '40%'
     },
     filters: {

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import { View, Text, Image, Dimensions , StyleSheet, StatusBar, TextInput, Modal, TouchableOpacity, Alert} from 'react-native';
 import Navbar from '../Navbar/Navbar';
 import {LinearGradient} from 'expo-linear-gradient';
@@ -10,6 +10,7 @@ let widthvw = Dimensions.get('window').width; //full width
 let heightvh = Dimensions.get('window').height; //full height 
 
 export default function Coin({route, navigation}){
+    const isFirstRender = useRef(true);
     const { coin } = route.params;
     const [prices, setPrices] = useState({USD: 0, BTC: 0, ETH: 0, LTC: 0, BNB: 0, EOS: 0, XRP: 0, XLM: 0, LINK: 0, DOT: 0})
     const [conversion, setConversion] = useState({first: 1, second: coin.current_price});
@@ -34,12 +35,21 @@ export default function Coin({route, navigation}){
     },[])
 
     const handleConversionFirst = function(e){
-        setConversion((prev)=> ({first: e, second: e*prices[selectedCurrency]}))
+        // Cant de coin * precio del coin / precio del selected coin
+        setConversion((prev)=> ({first: e, second: Number.parseFloat(e * coin.current_price / prices[selectedCurrency]).toFixed(3)}))
     }
 
     const handleConversionSecond = function(e){
-        setConversion((prev)=> ({...prev, second: e}))
+        setConversion((prev)=> ({second: e, first: Number.parseFloat(e / coin.current_price * prices[selectedCurrency]).toFixed(3)}))
     }
+
+    useEffect(()=>{
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+          } else {
+            setConversion((prev)=> ({...prev, second: Number.parseFloat(prev.first * coin.current_price / prices[selectedCurrency]).toFixed(3)}))
+          }
+    },[selectedCurrency])
 
     useEffect(()=>{
         if(coin.sparkline_in_7d){
@@ -87,7 +97,7 @@ export default function Coin({route, navigation}){
     return (
         <View style={s.container}>
             <StatusBar barStyle='light-content' backgroundColor="#161831" />
-            <Navbar navigation={navigation} />
+            <Navbar navigation={navigation} isCoin={true} />
             <View style={s.content}>
                 <View style={s.header}>
                     <LinearGradient colors={['#3AE778', '#5054A2']} style={s.rankContainer} start={{x: 0, y: 0}} end={{x: 1, y: 0}} >
